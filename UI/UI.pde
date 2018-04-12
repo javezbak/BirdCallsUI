@@ -62,22 +62,22 @@ void setup()
   Bird redWingedBlackBird = new Bird("redWingedBlackBird.jpg", "Red-winged blackbird.wav", 1219, 20);
   
   //row 2
-  Bird blackCappedChickadee = new Bird("BlackCappedChickadee.jpg", "GrayCatbird.wav", 10, 240); 
-  Bird blueJay = new Bird("BlueJay.jpg", "Osprey.wav", 413, 240);
-  Bird canadaGoose = new Bird("CanadaGoose.jpg", "Mourning Dove.wav", 816, 240);
-  Bird downyWoodpecker = new Bird("DownyWoodpecker.jpg", "Red-winged blackbird.wav", 1219, 240);
+  Bird blackCappedChickadee = new Bird("BlackCappedChickadee.jpg", "chickadee.wav", 10, 240); 
+  Bird blueJay = new Bird("BlueJay.jpg", "blueJay.wav", 413, 240);
+  Bird canadaGoose = new Bird("CanadaGoose.jpg", "canadaGoose.wav", 816, 240);
+  Bird downyWoodpecker = new Bird("DownyWoodpecker.jpg", "woodpecker.wav", 1219, 240);
   
   //row 3
-  Bird easternScreenOwl = new Bird("EasternScreenOwl.jpg", "GrayCatbird.wav", 10, 460); 
-  Bird easternTowhee = new Bird("EasternTowhee.jpg", "Osprey.wav", 413, 460);
-  Bird mallard = new Bird("Mallard.jpg", "Mourning Dove.wav", 816, 460);
-  Bird northernCardinal = new Bird("NorthernCardinal.jpg", "Red-winged blackbird.wav", 1219, 460);
+  Bird easternScreenOwl = new Bird("EasternScreenOwl.jpg", "owl.wav", 10, 460); 
+  Bird easternTowhee = new Bird("EasternTowhee.jpg", "towhee.wav", 413, 460);
+  Bird mallard = new Bird("Mallard.jpg", "mallard.wav", 816, 460);
+  Bird northernCardinal = new Bird("NorthernCardinal.jpg", "cardinal.wav", 1219, 460);
   
   //row 4
-  Bird songSparrow = new Bird("SongSparrow.jpg", "GrayCatbird.wav", 10, 680); 
-  Bird turkey = new Bird("Turkey.jpg", "Osprey.wav", 413, 680);
-  Bird yellowWarbler = new Bird("YellowWarbler.jpg", "Mourning Dove.wav", 816, 680);
-  Bird redBreastedNuthatch = new Bird("redBreastedNuthatch.jpg", "Red-winged blackbird.wav", 1219, 680);
+  Bird songSparrow = new Bird("SongSparrow.jpg", "sparrow.wav", 10, 680); 
+  Bird turkey = new Bird("Turkey.jpg", "turkey.wav", 413, 680);
+  Bird yellowWarbler = new Bird("YellowWarbler.jpg", "warbler.wav", 816, 680);
+  Bird redBreastedNuthatch = new Bird("redBreastedNuthatch.jpg", "nuthatch.wav", 1219, 680);
   
   birds = new Bird[]{grayCatBird, osprey, mourningDove, redWingedBlackBird,
                      blackCappedChickadee, blueJay, canadaGoose, downyWoodpecker,
