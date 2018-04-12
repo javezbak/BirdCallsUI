@@ -1,66 +1,131 @@
 import beads.*;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.AudioInputStream;
+import processing.sound.*;
 import processing.serial.*;
+import java.util.HashMap;
 
-String sourceFile;
-PImage img;  
-AudioContext ac;
-SamplePlayer sp;
-Gain g;
-Glide gainValue;
 Serial port;
+final int size = 200;
 
-void setup(){
+Bird selectedBird = null;
+float duration = 0.0;
+boolean needRefresh = false;
+
+class Bird{
   
-  //window
-  size(300,450);
+  private PImage image;
+  private SoundFile call;
+  private int xCoor;
+  private int yCoor;
+  private int sizeX;
+  private int sizeY;
   
-  //image
-  img = loadImage("treeswallow.jpg");
+  Bird(String img, String soundFile, int x, int y)
+  {
+    image = loadImage(img);
+    call = new SoundFile(UI.this, soundFile);
+    xCoor = x;
+    yCoor = y;
+  }
+  
+  public void drawOnScreen() { image(image, xCoor, yCoor, size, size); }
+  
+  public void buttonPress()
+  { 
+    needRefresh = true;
+    duration = call.duration();
+    selectedBird = this;
+    
+    //orange outline around selected bird
+    fill(204, 102, 0);
+    rect(xCoor-10, yCoor-10, size+20, size+20, 7);
+    drawOnScreen();
+    
+    //play the bird call
+    call.play();
+  }
+}
+
+//stores all bird instances
+Bird birds[];
+HashMap<Character, Bird> buttonToBird = new HashMap<Character, Bird>();
+
+void setup()
+{
+  //window size
+  fullScreen();
+  
+  //creating the birds
+  //row 1
+  Bird grayCatBird = new Bird("grayCatBird.jpg", "GrayCatbird.wav", 10, 20); 
+  Bird osprey = new Bird("osprey.jpg", "Osprey.wav", 413, 20);
+  Bird mourningDove = new Bird("MourningDove.jpg", "Mourning Dove.wav", 816, 20);
+  Bird redWingedBlackBird = new Bird("redWingedBlackBird.jpg", "Red-winged blackbird.wav", 1219, 20);
+  
+  //row 2
+  Bird blackCappedChickadee = new Bird("BlackCappedChickadee.jpg", "GrayCatbird.wav", 10, 240); 
+  Bird blueJay = new Bird("BlueJay.jpg", "Osprey.wav", 413, 240);
+  Bird canadaGoose = new Bird("CanadaGoose.jpg", "Mourning Dove.wav", 816, 240);
+  Bird downyWoodpecker = new Bird("DownyWoodpecker.jpg", "Red-winged blackbird.wav", 1219, 240);
+  
+  //row 3
+  Bird easternScreenOwl = new Bird("EasternScreenOwl.jpg", "GrayCatbird.wav", 10, 460); 
+  Bird easternTowhee = new Bird("EasternTowhee.jpg", "Osprey.wav", 413, 460);
+  Bird mallard = new Bird("Mallard.jpg", "Mourning Dove.wav", 816, 460);
+  Bird northernCardinal = new Bird("NorthernCardinal.jpg", "Red-winged blackbird.wav", 1219, 460);
+  
+  //row 4
+  Bird songSparrow = new Bird("SongSparrow.jpg", "GrayCatbird.wav", 10, 680); 
+  Bird turkey = new Bird("Turkey.jpg", "Osprey.wav", 413, 680);
+  Bird yellowWarbler = new Bird("YellowWarbler.jpg", "Mourning Dove.wav", 816, 680);
+  Bird redBreastedNuthatch = new Bird("redBreastedNuthatch.jpg", "Red-winged blackbird.wav", 1219, 680);
+  
+  birds = new Bird[]{grayCatBird, osprey, mourningDove, redWingedBlackBird,
+                     blackCappedChickadee, blueJay, canadaGoose, downyWoodpecker,
+                     easternScreenOwl, easternTowhee, mallard, northernCardinal,
+                     songSparrow, turkey, yellowWarbler, redBreastedNuthatch};
+  char letter = 'A';
+  for (int i = 0; i < birds.length; ++i)
+  {
+    buttonToBird.put(letter, birds[i]);
+    ++letter;
+  }
   
   //port for Arduino
-  port = new Serial(this, "/dev/tty.usbmodem1431", 9600);  
-
-  //audio
-  ac = new AudioContext();
-  sourceFile = sketchPath("") + "swallowSound.wav";
-  try {
-    sp =  new SamplePlayer(ac, new Sample(sourceFile));
-  }
-  catch(Exception e){
-    print("Error" + e.toString());
-  }
+  port = new Serial(this, "/dev/tty.usbmodem1431", 9600);
   
-  //allows multiple plays
-  sp.setKillOnEnd(false);
-  
-  //volume
-  gainValue = new Glide(ac, 0.0, 20);
-  g = new Gain(ac, 1, gainValue);
-  
-  g.addInput(sp); // connect the SamplePlayer to the Gain
-  
-  ac.out.addInput(g); // connect the Gain to the AudioContext
-  ac.start(); // begin audio processing
+  //display all the birds 
+  background(0);
+  for(int i = 0; i < birds.length; ++i)
+    birds[i].drawOnScreen();
 }
 
 void draw(){
-  background(0);
-  image(img,10,20,90,60);
-  while (port.available() > 0) {
-    char inByte = port.readChar();
-    if(inByte == 'f')
+  
+  //a bird button has already been pressed
+  if(duration > 0)
+    duration -= 0.1;
+  if(duration < 0 && needRefresh)
+  {
+    //draw the images again
+    background(0);
+    for(int i = 0; i < birds.length; ++i)
+      birds[i].drawOnScreen();
+    needRefresh = false;
+    
+    //ignore any button presses during an existing bird call
+    port.clear();
+  }
+  
+  else
+  {
+    while (port.available() > 0 && !needRefresh)
     {
-      // set the gain based on mouse position
-       gainValue.setValue(0.636);
-      // move the playback pointer to the first loop point (0.0)
-       sp.setToLoopStart();
-       sp.start(); // play the audio file
-       
-       tint(0,200,255);
-       image(img,10,20,90,60);
+      //recieve button presses
+      char inByte = port.readChar();
+      Bird selectedBird = buttonToBird.get(inByte);
+      if(selectedBird != null)
+        selectedBird.buttonPress();
     }
   }
+  delay(100);
 }
